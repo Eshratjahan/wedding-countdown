@@ -6,7 +6,7 @@
 <title>Wedding Card</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Jost:wght@400&display=swap">
 <style>
-  /* One static card per section, chosen with ?s=start|budget|expenses|seating|tasks|guests */
+  /* One static card per section, chosen with ?s=start|budget|expenses|seating|tasks|guests|inspiration */
   :root {
     --bg: #fbf6f2; --ink: #5e3f40; --soft: #9a7c78; --gold: #c3a06b; --line: #ead9d3;
     --script: "Great Vibes", "Snell Roundhand", cursive;
@@ -33,19 +33,17 @@
   .rule i { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); }
   .sub { font: 400 clamp(9px, min(2.4vw, 4.6vh), 13px) var(--ui); letter-spacing: .3em; text-transform: uppercase; color: var(--soft); padding-left: .3em; }
 
-  /* Start here: a thin blush banner with a fixed wide shape, centred in whatever space Notion gives it */
+  /* Start here: a thin blush banner. Plain sizes only (no vw/vh/aspect-ratio), so iPhone Safari keeps it inside the screen */
   html.banner, html.banner body { background: transparent; }
-  html.banner body { grid-template-columns: 100%; }
+  html.banner body { display: flex; align-items: center; justify-content: center; }
   html.banner .card {
-    /* explicit size instead of aspect-ratio, which Safari sizes from the height */
-    width: min(100%, calc((100vh - 12px) * 4.2));
-    height: min(calc(100vh - 12px), calc((100vw - 12px) / 4.2));
-    justify-self: center;
+    width: 100%; max-width: 100%; height: auto;
     background: #f6e4e1; border-color: var(--gold);
   }
-  html.banner .inner { gap: min(1.6vh, 1.2vw); padding: 1% 4%; border-color: #ecd0cb; }
-  html.banner .name { font-size: clamp(26px, min(7vw, 22vh), 64px); }
-  html.banner .rule { width: min(40%, 220px); }
+  html.banner .inner { gap: 6px; padding: 14px 16px; border-color: #ecd0cb; }
+  html.banner .name { font-size: 40px; line-height: 1.1; }
+  html.banner .rule { width: 160px; max-width: 60%; }
+  html.banner .sub { font-size: 11px; }
 </style>
 </head>
 <body>
@@ -63,6 +61,7 @@
     seating:  ["03", "Seating",  "Tables & seats"],
     tasks:    ["04", "Tasks",    "Your checklist"],
     guests:   ["05", "Guests",   "RSVPs & meals"],
+    inspiration: ["06", "Inspiration", "Your mood board"],
   };
   const key = (new URLSearchParams(location.search).get("s") || "budget").toLowerCase();
   const c = CARDS[key] || CARDS.budget;
