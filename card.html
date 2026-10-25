@@ -32,6 +32,16 @@
   .rule::before, .rule::after { content: ""; flex: 1; height: 1px; background: var(--gold); }
   .rule i { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); }
   .sub { font: 400 clamp(9px, min(2.4vw, 4.6vh), 13px) var(--ui); letter-spacing: .3em; text-transform: uppercase; color: var(--soft); padding-left: .3em; }
+
+  /* Start here: a thin blush banner with a fixed wide shape, centred in whatever space Notion gives it */
+  html.banner, html.banner body { background: transparent; }
+  html.banner .card {
+    height: auto; aspect-ratio: 4.2 / 1; max-height: 100%;
+    background: #f6e4e1; border-color: var(--gold);
+  }
+  html.banner .inner { gap: min(1.6vh, 1.2vw); padding: 1% 4%; border-color: #ecd0cb; }
+  html.banner .name { font-size: clamp(26px, min(7vw, 22vh), 64px); }
+  html.banner .rule { width: min(40%, 220px); }
 </style>
 </head>
 <body>
@@ -52,6 +62,7 @@
   };
   const key = (new URLSearchParams(location.search).get("s") || "budget").toLowerCase();
   const c = CARDS[key] || CARDS.budget;
+  if (key === "start") document.documentElement.classList.add("banner");
   document.getElementById("num").textContent = c[0];
   document.getElementById("num").hidden = !c[0];
   document.getElementById("name").textContent = c[1];
