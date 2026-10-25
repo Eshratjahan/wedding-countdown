@@ -6,7 +6,7 @@
 <title>Wedding Card</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Jost:wght@400&display=swap">
 <style>
-  /* One static card per section, chosen with ?s=start|budget|expenses|seating|tasks|guests|inspiration */
+  /* One static card per section, chosen with ?s=start|budget|expenses|seating|tasks|guests|vendors|day|inspiration */
   :root {
     --bg: #fbf6f2; --ink: #5e3f40; --soft: #9a7c78; --gold: #c3a06b; --line: #ead9d3;
     --script: "Great Vibes", "Snell Roundhand", cursive;
@@ -61,7 +61,9 @@
     seating:  ["03", "Seating",  "Tables & seats"],
     tasks:    ["04", "Tasks",    "Your checklist"],
     guests:   ["05", "Guests",   "RSVPs & meals"],
-    inspiration: ["06", "Inspiration", "Your mood board"],
+    vendors:  ["06", "Vendors",  "Contacts & bookings"],
+    day:      ["07", "Wedding Day", "Hour by hour"],
+    inspiration: ["08", "Inspiration", "Your mood board"],
   };
   const key = (new URLSearchParams(location.search).get("s") || "budget").toLowerCase();
   const c = CARDS[key] || CARDS.budget;
