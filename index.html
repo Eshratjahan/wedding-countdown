@@ -13,89 +13,166 @@
     --soft: #9a7c78;
     --gold: #c3a06b;
     --line: #ead9d3;
+    --field: #ffffff;
     --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
     --script: "Great Vibes", "Snell Roundhand", cursive;
     --ui: "Jost", "Avenir Next", "Segoe UI", sans-serif;
   }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --bg: #241c1d; --ink: #f3e3df; --soft: #b89c97; --gold: #d2b27c; --line: #3d3031; color-scheme: dark; }
+    :root:not([data-theme="light"]) { --bg: #241c1d; --ink: #f3e3df; --soft: #b89c97; --gold: #d2b27c; --line: #3d3031; --field: #2f2526; color-scheme: dark; }
   }
-  :root[data-theme="dark"] { --bg: #241c1d; --ink: #f3e3df; --soft: #b89c97; --gold: #d2b27c; --line: #3d3031; color-scheme: dark; }
+  :root[data-theme="dark"] { --bg: #241c1d; --ink: #f3e3df; --soft: #b89c97; --gold: #d2b27c; --line: #3d3031; --field: #2f2526; color-scheme: dark; }
 
-  html, body { height: 100%; margin: 0; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
   body {
     background: var(--bg); color: var(--ink);
     display: grid; place-items: center;
-    padding-block: 24px;
+    padding-block: 8px;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
     font-family: var(--ui);
+    position: relative;
+    box-sizing: border-box;
   }
   .cd { display: grid; justify-items: center; gap: 4px; text-align: center; width: min(100%, 420px); }
-  .names { font-family: var(--script); font-size: clamp(30px, 8vw, 40px); line-height: 1.1; color: var(--ink); }
+  .names { font-family: var(--script); font-size: clamp(22px, min(8vw, 9vh), 40px); line-height: 1.1; }
   .num {
     font-family: var(--display); font-weight: 500;
-    font-size: clamp(96px, 30vw, 150px); line-height: .9;
+    font-size: clamp(56px, min(30vw, 30vh), 150px); line-height: .9;
     letter-spacing: -0.02em; font-variant-numeric: lining-nums tabular-nums;
     margin-top: 6px;
   }
   .label { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; color: var(--soft); }
-  .rule { display: flex; align-items: center; gap: 10px; width: 100%; margin: 18px 0 14px; }
+  .rule { display: flex; align-items: center; gap: 10px; width: 100%; margin: clamp(6px, 3vh, 18px) 0 clamp(6px, 2.4vh, 14px); }
   .rule::before, .rule::after { content: ""; flex: 1; height: 1px; background: var(--gold); opacity: .7; }
   .rule i { width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
   .parts { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
   .part { display: grid; gap: 2px; }
   .part + .part { border-left: 1px solid var(--line); }
-  .part b { font-family: var(--display); font-weight: 500; font-size: 34px; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+  .part b { font-family: var(--display); font-weight: 500; font-size: clamp(22px, 7vh, 34px); line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
   .part span { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--soft); }
-  .date { margin-top: 16px; font-family: var(--display); font-style: italic; font-size: 18px; color: var(--soft); }
-  @media (prefers-reduced-motion: no-preference) {
-    .num { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
-    @keyframes rise { from { opacity: .0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .date { margin-top: clamp(6px, 2.5vh, 16px); font-family: var(--display); font-style: italic; font-size: 18px; color: var(--soft); }
+
+  .edit {
+    position: absolute; top: 10px; right: max(10px, env(safe-area-inset-right, 0px));
+    border: 1px solid var(--line); background: var(--bg); color: var(--soft);
+    font: 500 12px var(--ui); letter-spacing: .14em; text-transform: uppercase;
+    padding: 7px 12px; border-radius: 999px; cursor: pointer;
   }
+  .edit:hover, .edit:focus-visible { color: var(--ink); border-color: var(--gold); outline: none; }
+  .hint { font-size: 12px; color: var(--soft); margin-top: 10px; }
+
+  form { display: grid; gap: 8px; width: min(100%, 420px); text-align: left; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 380px) { .fields { grid-template-columns: 1fr; } }
+  form h2 { margin: 0; text-align: center; font-family: var(--script); font-weight: 400; font-size: clamp(24px, 9vh, 34px); line-height: 1.1; }
+  label.f { display: grid; gap: 6px; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--soft); }
+  input {
+    font: 400 16px var(--ui); color: var(--ink); background: var(--field);
+    border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; width: 100%; box-sizing: border-box;
+  }
+  input:focus { outline: none; border-color: var(--gold); }
+  .row { display: flex; gap: 10px; }
+  .row button { flex: 1; font: 500 13px var(--ui); letter-spacing: .14em; text-transform: uppercase; padding: 10px; border-radius: 999px; cursor: pointer; }
+  .save { background: var(--ink); color: var(--bg); border: 1px solid var(--ink); }
+  .cancel { background: transparent; color: var(--soft); border: 1px solid var(--line); }
+  .err { min-height: 0; font-size: 12px; color: #b4524f; text-align: center; }
+
 </style>
 </head>
 <body>
 
-<main class="cd" aria-live="polite">
+<button class="edit" id="editBtn" type="button" aria-label="Edit names and wedding date">✎ Edit</button>
+
+<main class="cd" id="view" aria-live="polite">
   <div class="names" id="names">Anna &amp; Ben</div>
   <div class="num" id="num">230</div>
   <div class="label" id="label">days to go</div>
   <div class="rule" aria-hidden="true"><i></i></div>
   <div class="parts">
-    <div class="part"><b id="m">7</b><span>months</span></div>
-    <div class="part"><b id="w">2</b><span>weeks</span></div>
-    <div class="part"><b id="d">4</b><span>days</span></div>
+    <div class="part"><b id="m">7</b><span id="ml">months</span></div>
+    <div class="part"><b id="w">2</b><span id="wl">weeks</span></div>
+    <div class="part"><b id="d">4</b><span id="dl">days</span></div>
   </div>
   <div class="date" id="date">Saturday, 12 June 2027</div>
+  <div class="hint" id="hint">Example date. Tap Edit to add your names and wedding date.</div>
 </main>
 
+<form id="form" hidden>
+  <h2>Your wedding</h2>
+  <div class="fields">
+    <label class="f" for="inNames">Your names
+      <input id="inNames" type="text" maxlength="40" placeholder="Anna & Ben" autocomplete="off">
+    </label>
+    <label class="f" for="inDate">Wedding date
+      <input id="inDate" type="date">
+    </label>
+  </div>
+  <div class="err" id="err"></div>
+  <div class="row">
+    <button class="cancel" type="button" id="cancelBtn">Cancel</button>
+    <button class="save" type="submit">Save</button>
+  </div>
+</form>
+
 <script>
-  // Settings: edit via URL (?date=2027-06-12&names=Anna%20%26%20Ben) or here.
+  const KEY = "wedding-countdown";
   const q = new URLSearchParams(location.search);
-  const DATE = q.get("date") || "2027-06-12";
-  const NAMES = q.get("names") || "Anna & Ben";
+  const DEFAULT = { date: q.get("date") || "2027-06-12", names: q.get("names") || "Anna & Ben", example: !q.get("date") };
+
+  function load() {
+    try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.date) return { ...s, example: false }; } catch (e) {}
+    return DEFAULT;
+  }
+  function store(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); return true; } catch (e) { return false; } }
+
+  let settings = load();
+  const $ = id => document.getElementById(id);
 
   function render() {
-    const [y, mo, da] = DATE.split("-").map(Number);
+    const [y, mo, da] = settings.date.split("-").map(Number);
     const target = new Date(y, mo - 1, da);
     const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const days = Math.round((target - today) / 86400000);
-    document.getElementById("names").textContent = NAMES;
-    document.getElementById("date").textContent = target.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-    const num = document.getElementById("num"), label = document.getElementById("label");
-    if (days > 0) { num.textContent = days; label.textContent = days === 1 ? "day to go" : "days to go"; }
-    else if (days === 0) { num.textContent = "Today"; label.textContent = "is the day"; }
-    else { num.textContent = Math.abs(days); label.textContent = "days married"; }
-    // calendar breakdown: whole months, then weeks and days of the remainder
-    let a = days >= 0 ? today : target, b = days >= 0 ? target : today, m = 0;
-    while (true) { const n = new Date(a.getFullYear(), a.getMonth() + m + 1, a.getDate()); if (n <= b) m++; else break; }
-    const after = new Date(a.getFullYear(), a.getMonth() + m, a.getDate());
-    const rest = Math.round((b - after) / 86400000);
-    document.getElementById("m").textContent = m;
-    document.getElementById("w").textContent = Math.floor(rest / 7);
-    document.getElementById("d").textContent = rest % 7;
+    $("names").textContent = settings.names || " ";
+    $("date").textContent = target.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    $("hint").hidden = !settings.example;
+    if (days > 0) { $("num").textContent = days; $("label").textContent = days === 1 ? "day to go" : "days to go"; }
+    else if (days === 0) { $("num").textContent = "Today"; $("label").textContent = "is the day"; }
+    else { $("num").textContent = Math.abs(days); $("label").textContent = Math.abs(days) === 1 ? "day married" : "days married"; }
+    // whole calendar months first, then weeks and days of what is left
+    const a = days >= 0 ? today : target, b = days >= 0 ? target : today;
+    let m = 0;
+    while (new Date(a.getFullYear(), a.getMonth() + m + 1, a.getDate()) <= b) m++;
+    const rest = Math.round((b - new Date(a.getFullYear(), a.getMonth() + m, a.getDate())) / 86400000);
+    const wk = Math.floor(rest / 7), dy = rest % 7;
+    $("m").textContent = m; $("w").textContent = wk; $("d").textContent = dy;
+    $("ml").textContent = m === 1 ? "month" : "months";
+    $("wl").textContent = wk === 1 ? "week" : "weeks";
+    $("dl").textContent = dy === 1 ? "day" : "days";
   }
+
+  function openForm() {
+    $("inNames").value = settings.example ? "" : settings.names;
+    $("inDate").value = settings.example ? "" : settings.date;
+    $("err").textContent = "";
+    $("view").hidden = true; $("editBtn").hidden = true; $("form").hidden = false;
+    $("inNames").focus();
+  }
+  function closeForm() { $("form").hidden = true; $("view").hidden = false; $("editBtn").hidden = false; }
+
+  $("editBtn").addEventListener("click", openForm);
+  $("cancelBtn").addEventListener("click", closeForm);
+  $("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const date = $("inDate").value;
+    if (!date) { $("err").textContent = "Pick your wedding date to continue."; return; }
+    settings = { names: $("inNames").value.trim(), date, example: false };
+    if (!store(settings)) $("err").textContent = "Saved for now. Your browser blocked storage, so it may reset.";
+    closeForm(); render();
+  });
+
   render();
   setInterval(render, 60000);
 </script>
