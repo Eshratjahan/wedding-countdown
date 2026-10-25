@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wedding Countdown</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&family=Jost:wght@400;500&display=swap">
+<style>
+  /* Layout: one centred card, script names above a large serif numeral, hairline, three-part breakdown */
+  :root {
+    --bg: #fbf6f2;
+    --ink: #5e3f40;
+    --soft: #9a7c78;
+    --gold: #c3a06b;
+    --line: #ead9d3;
+    --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+    --script: "Great Vibes", "Snell Roundhand", cursive;
+    --ui: "Jost", "Avenir Next", "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #241c1d; --ink: #f3e3df; --soft: #b89c97; --gold: #d2b27c; --line: #3d3031; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --bg: #241c1d; --ink: #f3e3df; --soft: #b89c97; --gold: #d2b27c; --line: #3d3031; color-scheme: dark; }
+
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    display: grid; place-items: center;
+    padding-block: 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    font-family: var(--ui);
+  }
+  .cd { display: grid; justify-items: center; gap: 4px; text-align: center; width: min(100%, 420px); }
+  .names { font-family: var(--script); font-size: clamp(30px, 8vw, 40px); line-height: 1.1; color: var(--ink); }
+  .num {
+    font-family: var(--display); font-weight: 500;
+    font-size: clamp(96px, 30vw, 150px); line-height: .9;
+    letter-spacing: -0.02em; font-variant-numeric: lining-nums tabular-nums;
+    margin-top: 6px;
+  }
+  .label { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; color: var(--soft); }
+  .rule { display: flex; align-items: center; gap: 10px; width: 100%; margin: 18px 0 14px; }
+  .rule::before, .rule::after { content: ""; flex: 1; height: 1px; background: var(--gold); opacity: .7; }
+  .rule i { width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
+  .parts { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+  .part { display: grid; gap: 2px; }
+  .part + .part { border-left: 1px solid var(--line); }
+  .part b { font-family: var(--display); font-weight: 500; font-size: 34px; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+  .part span { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--soft); }
+  .date { margin-top: 16px; font-family: var(--display); font-style: italic; font-size: 18px; color: var(--soft); }
+  @media (prefers-reduced-motion: no-preference) {
+    .num { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes rise { from { opacity: .0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+</head>
+<body>
+
+<main class="cd" aria-live="polite">
+  <div class="names" id="names">Anna &amp; Ben</div>
+  <div class="num" id="num">230</div>
+  <div class="label" id="label">days to go</div>
+  <div class="rule" aria-hidden="true"><i></i></div>
+  <div class="parts">
+    <div class="part"><b id="m">7</b><span>months</span></div>
+    <div class="part"><b id="w">2</b><span>weeks</span></div>
+    <div class="part"><b id="d">4</b><span>days</span></div>
+  </div>
+  <div class="date" id="date">Saturday, 12 June 2027</div>
+</main>
+
+<script>
+  // Settings: edit via URL (?date=2027-06-12&names=Anna%20%26%20Ben) or here.
+  const q = new URLSearchParams(location.search);
+  const DATE = q.get("date") || "2027-06-12";
+  const NAMES = q.get("names") || "Anna & Ben";
+
+  function render() {
+    const [y, mo, da] = DATE.split("-").map(Number);
+    const target = new Date(y, mo - 1, da);
+    const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const days = Math.round((target - today) / 86400000);
+    document.getElementById("names").textContent = NAMES;
+    document.getElementById("date").textContent = target.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const num = document.getElementById("num"), label = document.getElementById("label");
+    if (days > 0) { num.textContent = days; label.textContent = days === 1 ? "day to go" : "days to go"; }
+    else if (days === 0) { num.textContent = "Today"; label.textContent = "is the day"; }
+    else { num.textContent = Math.abs(days); label.textContent = "days married"; }
+    // calendar breakdown: whole months, then weeks and days of the remainder
+    let a = days >= 0 ? today : target, b = days >= 0 ? target : today, m = 0;
+    while (true) { const n = new Date(a.getFullYear(), a.getMonth() + m + 1, a.getDate()); if (n <= b) m++; else break; }
+    const after = new Date(a.getFullYear(), a.getMonth() + m, a.getDate());
+    const rest = Math.round((b - after) / 86400000);
+    document.getElementById("m").textContent = m;
+    document.getElementById("w").textContent = Math.floor(rest / 7);
+    document.getElementById("d").textContent = rest % 7;
+  }
+  render();
+  setInterval(render, 60000);
+</script>
+</body>
+</html>
